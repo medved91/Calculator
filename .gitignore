@@ -2,3 +2,4 @@
 bin
 obj
 /Calculator.CountingService/obj
+/Calculator.Web/Calculator.Web.csproj.user
