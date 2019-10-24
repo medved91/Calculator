@@ -3,3 +3,6 @@ bin
 obj
 /Calculator.CountingService/obj
 /Calculator.Web/Calculator.Web.csproj.user
+
+Calculator.CountingService/obj
+Calculator.Web/obj
