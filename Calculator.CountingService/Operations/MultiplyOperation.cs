@@ -3,7 +3,7 @@
     public class MultiplyOperation : IOperation
     {
         public string Symbol => "*";
-        public TokenPriority Priority => TokenPriority.High;
+        public OperationPriority Priority => OperationPriority.High;
         public double Count(double left, double right) => left * right;
     }
 }

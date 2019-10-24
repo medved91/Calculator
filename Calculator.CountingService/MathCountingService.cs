@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Calculator.CountingService.Operations;
 
 namespace Calculator.CountingService
 {
-    public class CountingService : ICountingService
+    public class MathCountingService : IMathCountingService
     {
         private readonly IMathExpressionParser _mathExpressionParser;
         private readonly IEnumerable<IOperation> _operations;
 
-        public CountingService(
+        public MathCountingService(
             IMathExpressionParser mathExpressionParser,
             IEnumerable<IOperation> operations)
         {
@@ -29,7 +30,7 @@ namespace Calculator.CountingService
             var values = new Stack<double>();
             foreach (var token in reversePolishInput)
             {
-                if (double.TryParse(token, out var number))
+                if (double.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out var number))
                 {
                     values.Push(number);
                     continue;
@@ -39,14 +40,13 @@ namespace Calculator.CountingService
                 var rightNumber = values.Pop();
                 var leftNumber = values.Pop();
 
-                if(operation == null) throw new ApplicationException($"Неизвестная операция: {token}");
-
                 var result = operation.Count(leftNumber, rightNumber);
                 values.Push(result);
             }
 
             if (values.Count > 1) throw new ApplicationException("Чисел введено больше, чем операций");
-
+            if(!values.Any()) throw new ApplicationException("Операций введено больше, чем чисел");
+            
             return values.Pop();
         }
     }

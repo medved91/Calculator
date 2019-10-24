@@ -27,11 +27,13 @@ namespace Calculator.CountingService
                 if (IsNumber(token))
                 {
                     outputList.Add(token);
+                    continue;
                 }
 
                 if (token == "(")
                 {
                     tokenStack.Push(token);
+                    continue;
                 }
                 
                 if (token == ")")
@@ -42,6 +44,7 @@ namespace Calculator.CountingService
                     }
 
                     tokenStack.Pop();
+                    continue;
                 }
 
                 if (IsOperation(token))
@@ -61,8 +64,8 @@ namespace Calculator.CountingService
             return outputList;
         }
 
-        private TokenPriority GetPriority(string token) 
-            => _operations.FirstOrDefault(o => o.Symbol == token)?.Priority ?? TokenPriority.Low;
+        private OperationPriority GetPriority(string token) 
+            => _operations.FirstOrDefault(o => o.Symbol == token)?.Priority ?? OperationPriority.Low;
 
         private bool IsOperation(string token) 
             => _operations.Any(o => o.Symbol == token);
@@ -70,55 +73,91 @@ namespace Calculator.CountingService
         private bool IsNumber(string token)
             => double.TryParse(token, out _);
 
+        private bool IsDecimalSeparator(string symbol)
+            => symbol == "," || symbol == ".";
+
         private IEnumerable<string> ParseToTokens(string infix)
         {
             var tokens = new List<string>();
+            var currentSymbolPosition = 0;
 
-            for (var symbolPosition = 0; symbolPosition < infix.Length; symbolPosition++)
+            while (currentSymbolPosition < infix.Length)
             {
-                var currentSymbol = infix[symbolPosition].ToString();
+                var currentSymbol = infix[currentSymbolPosition].ToString();
                 
                 if (IsNumber(currentSymbol))
                 {
                     var fullNumber = new StringBuilder();
-                    var nextSymbolPosition = symbolPosition;
-                    while (IsNumber(currentSymbol) && nextSymbolPosition < infix.Length)
+                    var nextSymbolPosition = currentSymbolPosition;
+                    var numberParsed = false;
+                    var lastParsedSymbol = currentSymbol;
+
+                    while (!numberParsed && nextSymbolPosition < infix.Length)
                     {
-                        fullNumber.Append(currentSymbol);
+                        if (IsDecimalSeparator(lastParsedSymbol) && !IsNumber(currentSymbol))
+                            throw new ApplicationException($"Некорректный символ: {currentSymbol}");
+                        if (!IsDecimalSeparator(currentSymbol) && !IsNumber(currentSymbol) && IsNumber(lastParsedSymbol))
+                        {
+                            numberParsed = true;
+                            continue;
+                        }
+
+                        if(IsNumber(currentSymbol))
+                            fullNumber.Append(currentSymbol);
+                        else
+                        if(IsDecimalSeparator(currentSymbol))
+                            fullNumber.Append(".");
+                        else
+                            throw new ApplicationException($"Некорректный символ: {currentSymbol}");
+                        
+                        lastParsedSymbol = currentSymbol;
                         nextSymbolPosition++;
-                        currentSymbol = infix[nextSymbolPosition].ToString();
+                        if(nextSymbolPosition < infix.Length) currentSymbol = infix[nextSymbolPosition].ToString();
                     }
 
                     tokens.Add(fullNumber.ToString());
+                    currentSymbolPosition = nextSymbolPosition;
+                    continue;
                 }
 
                 if(currentSymbol == "(" || currentSymbol == ")")
                 {
                     tokens.Add(currentSymbol);
+                    currentSymbolPosition++;
+                    continue;
                 }
 
-                if(string.IsNullOrWhiteSpace(currentSymbol)) continue;
+                if (string.IsNullOrWhiteSpace(currentSymbol))
+                {
+                    currentSymbolPosition++;
+                    continue;
+                }
 
                 var operationFound = false;
-                var nextSymbolPos = symbolPosition;
-                var parsedOperationName = new StringBuilder();
+                var nextSymbolPos = currentSymbolPosition;
+                var parsedOperationName = new StringBuilder(currentSymbol);
 
                 while (!operationFound && nextSymbolPos < infix.Length)
                 {
-                    parsedOperationName.Append(currentSymbol);
                     nextSymbolPos++;
-                    currentSymbol = infix[nextSymbolPos].ToString();
 
                     var operation = _operations.FirstOrDefault(o => o.Symbol == parsedOperationName.ToString());
-                    operationFound = operation != null;
+                    
+                    if (operation != null)
+                    {
+                        operationFound = true;
+                        continue;
+                    }
 
+                    if(nextSymbolPos<infix.Length) currentSymbol = infix[nextSymbolPos].ToString();
+                    parsedOperationName.Append(currentSymbol);
+                    
                     if(IsNumber(currentSymbol) || string.IsNullOrWhiteSpace(currentSymbol) || currentSymbol == "(" || currentSymbol == ")")
-                        throw new ApplicationException($"Недопустимая операция: {parsedOperationName}");
+                        throw new ApplicationException($"Не найдена операция, начинающаяся на: {parsedOperationName}");
                 }
 
-                if(!operationFound) throw new ApplicationException($"Недопустимая операция: {parsedOperationName}");
-
                 tokens.Add(parsedOperationName.ToString());
+                currentSymbolPosition = nextSymbolPos;
             }
 
             return tokens;

@@ -1,6 +1,6 @@
 ﻿namespace Calculator.CountingService
 {
-    public interface ICountingService
+    public interface IMathCountingService
     {
         double Count(string infixMathExpression);
     }
