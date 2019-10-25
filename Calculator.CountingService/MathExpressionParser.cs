@@ -215,7 +215,10 @@ namespace Calculator.CountingService
 
                     bracketStack.Pop();
                 }
-                
+
+                if(previousToken == null && !(IsNumber(token) || token == "("))
+                    throw new ApplicationException("Выражение не может начинаться с оператора");
+
                 if (previousToken == null)
                 {
                     previousToken = token;

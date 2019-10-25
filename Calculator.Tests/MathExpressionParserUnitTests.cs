@@ -54,6 +54,7 @@ namespace Calculator.Tests
         [InlineData("asd1*222", "Неизвестный оператор: asd")]
         [InlineData("1*222a", "Неизвестный оператор: a")]
         [InlineData("1*/", "Выражение должно заканчиваться числом или закрывающей скобкой")]
+        [InlineData("-1", "Выражение не может начинаться с оператора")]
         public void ShouldThrow_WhenHasMistakes(string infixInput, string exceptionMessage)
         {
             _mathExpressionParser

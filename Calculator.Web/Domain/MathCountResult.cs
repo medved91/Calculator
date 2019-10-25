@@ -2,6 +2,6 @@
 {
     public class MathCountResult
     {
-        public double Result { get; set; }
+        public string Result { get; set; }
     }
 }

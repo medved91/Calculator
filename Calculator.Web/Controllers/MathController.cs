@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Calculator.CountingService;
 using Calculator.Web.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace Calculator.Web.Controllers
 
             return new MathCountResult
             {
-                Result = result
+                Result = result.ToString(CultureInfo.InvariantCulture)
             };
         }
     }
