@@ -195,9 +195,15 @@ namespace Calculator.CountingService
 
         private void ValidateTokenSequence(IEnumerable<string> tokens)
         {
+            tokens = tokens.ToArray();
+
             string previousToken = null;
             var bracketStack = new Stack<string>();
-            
+            var lastToken = tokens.Last();
+
+            if(!IsNumber(lastToken) && lastToken != ")")
+                throw new ApplicationException("Выражение должно заканчиваться числом или закрывающей скобкой");
+
             foreach (var token in tokens)
             {
                 if(token == "(") bracketStack.Push(token);

@@ -49,10 +49,11 @@ namespace Calculator.Tests
         [InlineData("1 testt 2", "Неизвестный оператор: t")]
         [InlineData("()4", "Перед числом должна быть открывающая скобка или оператор")]
         [InlineData("(*)", "Перед оператором должно быть число или закрывающая скобка")]
-        [InlineData(")(", "Неправильная расстановка скобок")]
+        [InlineData(")()", "Неправильная расстановка скобок")]
         [InlineData("1*2\\222", "Неизвестный оператор: \\")]
         [InlineData("asd1*222", "Неизвестный оператор: asd")]
         [InlineData("1*222a", "Неизвестный оператор: a")]
+        [InlineData("1*/", "Выражение должно заканчиваться числом или закрывающей скобкой")]
         public void ShouldThrow_WhenHasMistakes(string infixInput, string exceptionMessage)
         {
             _mathExpressionParser

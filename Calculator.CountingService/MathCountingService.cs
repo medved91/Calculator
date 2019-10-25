@@ -39,12 +39,7 @@ namespace Calculator.CountingService
 
                 var operation = _operations.First(o => o.Symbol == token);
 
-                //TODO: Костыль. Утащить валидацию в парсер
-                if(!values.Any()) 
-                    throw new ApplicationException("Некорректное выражение");
                 var rightNumber = values.Pop();
-                if(!values.Any())
-                    throw new ApplicationException("Некорректное выражение");
                 var leftNumber = values.Pop();
 
                 var result = operation.Count(leftNumber, rightNumber);
