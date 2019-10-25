@@ -21,7 +21,8 @@ namespace Calculator.CountingService
 
         public double Count(string infixMathExpression)
         {
-            var reversePolish = _mathExpressionParser.ParseInfixToReversePolish(infixMathExpression);
+            var reversePolish = _mathExpressionParser
+                .ParseInfixToReversePolish(infixMathExpression);
             return CountReversePolish(reversePolish);
         }
 
@@ -36,16 +37,17 @@ namespace Calculator.CountingService
                     continue;
                 }
 
-                var operation = _operations.FirstOrDefault(o => o.Symbol == token);
+                var operation = _operations.First(o => o.Symbol == token);
+                if(!values.Any()) 
+                    throw new ApplicationException("Некорректное выражение");
                 var rightNumber = values.Pop();
+                if(!values.Any())
+                    throw new ApplicationException("Некорректное выражение");
                 var leftNumber = values.Pop();
 
                 var result = operation.Count(leftNumber, rightNumber);
                 values.Push(result);
             }
-
-            if (values.Count > 1) throw new ApplicationException("Чисел введено больше, чем операций");
-            if(!values.Any()) throw new ApplicationException("Операций введено больше, чем чисел");
             
             return values.Pop();
         }

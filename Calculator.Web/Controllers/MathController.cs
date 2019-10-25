@@ -20,6 +20,7 @@ namespace Calculator.Web.Controllers
         public ActionResult<MathCountResult> CalculateInfix([FromBody] CalculatorMathExpression calculatorMathExpression)
         {
             double result;
+            
             try
             {
                 result = _mathCountingService.Count(calculatorMathExpression.InfixExpression);

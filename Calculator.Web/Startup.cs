@@ -19,8 +19,12 @@ namespace Calculator.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(IMathExpressionParser), typeof(MathExpressionParser));
-            services.AddSingleton(typeof(IMathCountingService), typeof(MathCountingService));
+            services.AddSingleton(
+                typeof(IMathExpressionParser), 
+                typeof(MathExpressionParser));
+            services.AddSingleton(
+                typeof(IMathCountingService), 
+                typeof(MathCountingService));
             services.AddOperations();
             services.AddControllers();
         }
@@ -32,6 +36,8 @@ namespace Calculator.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

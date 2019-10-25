@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Calculator</title>
+
+</head>
+<body>
+    <div class="mathExpression">
+        <h3>Калькулятор</h3>
+        <label>Введите выражение</label><br />
+        <input type="text" id="inputMathExpression" /> <br /><br />
+        <input type="submit" id="submitInputMathExpression" value="Посчитать" />
+    </div>
+
+    <div class="mathResult" style="display:block;">
+        <p>Результат: <span class="mathResultMessage"></span></p>
+    </div>
+
+    <div class="errorMessageResult" style="display:none;">
+        <p><span class="errorMessage"></span></p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script>
+
+        $('#submitInputMathExpression').click(function (e) {
+            e.preventDefault();
+            var exprData = {
+                infixexpression: $('#inputMathExpression').val()
+            }
+
+            $.ajax({
+                contentType: 'application/json',
+                type: 'POST',
+                url: '/api/math/calculateinfix',
+                dataType: 'json',
+                data: JSON.stringify(exprData)
+            }).success(function (data) {
+                $('.mathResult').css('display', 'block');
+                $('.mathResultMessage').text(data.result);
+                $('.errorMessageResult').css('display', 'none');
+            }).fail(function(data) {
+                $('.mathResult').css('display', 'none');
+                $('.errorMessageResult').css('display', 'block');
+                $('.errorMessage').text(data.responseText);
+            });
+        });
+    </script>
+</body>
+</html>
